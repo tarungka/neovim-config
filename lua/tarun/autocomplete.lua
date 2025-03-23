@@ -113,40 +113,40 @@ return {
                     }),
                 },
                 -- Improve formatting
-                formatting = {
-                    format = function(entry, vim_item)
-                        -- Kind icons
-                        local kind_icons = {
-                            Text = "",
-                            Method = "",
-                            Function = "",
-                            Constructor = "",
-                            Field = "",
-                            Variable = "",
-                            Class = "ﴯ",
-                            Interface = "",
-                            Module = "",
-                            Property = "ﰠ",
-                            Unit = "",
-                            Value = "",
-                            Enum = "",
-                            Keyword = "",
-                            Snippet = "",
-                            Color = "",
-                            File = "",
-                            Reference = "",
-                            Folder = "",
-                            EnumMember = "",
-                            Constant = "",
-                            Struct = "",
-                            Event = "",
-                            Operator = "",
-                            TypeParameter = "",
-                        }
-                        vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind)
-                        return vim_item
-                    end,
-                },
+                -- formatting = {
+                --     format = function(entry, vim_item)
+                --         -- Kind icons
+                --         local kind_icons = {
+                --             Text = "",
+                --             Method = "",
+                --             Function = "",
+                --             Constructor = "",
+                --             Field = "",
+                --             Variable = "",
+                --             Class = "ﴯ",
+                --             Interface = "",
+                --             Module = "",
+                --             Property = "ﰠ",
+                --             Unit = "",
+                --             Value = "",
+                --             Enum = "",
+                --             Keyword = "",
+                --             Snippet = "",
+                --             Color = "",
+                --             File = "",
+                --             Reference = "",
+                --             Folder = "",
+                --             EnumMember = "",
+                --             Constant = "",
+                --             Struct = "",
+                --             Event = "",
+                --             Operator = "",
+                --             TypeParameter = "",
+                --         }
+                --         vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind)
+                --         return vim_item
+                --     end,
+                -- },
             })
         else
             vim.notify("CMP not found, skipping setup", vim.log.levels.WARN)
