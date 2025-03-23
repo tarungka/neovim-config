@@ -1,0 +1,66 @@
+ -- Tabs & Buffers
+  {
+    "akinsho/bufferline.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("bufferline").setup()
+    end
+  },
+
+  -- Indentation Guides
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    event = "BufReadPre",
+    config = function()
+      require("ibl").setup()
+    end
+  }
+
+
+
+// Utils.lua
+return {
+  -- Keybinding hints
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("which-key").setup()
+    end
+  },
+
+  -- Better notifications
+  {
+    "rcarriga/nvim-notify",
+    event = "VeryLazy",
+    config = function()
+      vim.notify = require("notify")
+    end
+  },
+
+  -- Floating terminal
+  {
+    "akinsho/toggleterm.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("toggleterm").setup({
+        open_mapping = [[<C-\>]],
+        direction = "float",
+      })
+    end
+  }
+}
+
+
+
+
+
+Plugins I need
+
+harpoon2
+luasnip
+bufferline
+nvim surround
+vim repeat
+diffview
+nvim-notify

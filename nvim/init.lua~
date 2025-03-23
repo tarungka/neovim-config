@@ -1,0 +1,946 @@
+--------------------------------------------------
+-- BOOTSTRAP & PLUGIN MANAGEMENT
+--------------------------------------------------
+-- Bootstrap lazy.nvim if not installed
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        lazypath,
+    })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- Plugin specification
+require("lazy").setup({
+    -- LSP Support
+    {
+        "neovim/nvim-lspconfig",
+        dependencies = {
+            "williamboman/mason.nvim",
+            "williamboman/mason-lspconfig.nvim",
+        },
+    },
+
+    -- Autocompletion
+    {
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-cmdline",
+            "L3MON4D3/LuaSnip",
+            "saadparwaiz1/cmp_luasnip",
+            "rafamadriz/friendly-snippets",
+            "lukas-reineke/cmp-under-comparator",
+        },
+    },
+
+    -- Syntax highlighting and code analysis
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter-context",
+            "HiPhish/nvim-ts-rainbow2",
+        },
+    },
+
+    -- Language specific
+    {
+        "fatih/vim-go",
+        build = ":GoUpdateBinaries"
+    },
+
+    -- File navigation and fuzzy finding
+    {
+        "nvim-tree/nvim-tree.lua",
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+        },
+    },
+    {
+        "nvim-telescope/telescope.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+    },
+
+    -- UI Enhancements
+    "nvim-lualine/lualine.nvim",
+    "folke/tokyonight.nvim",
+    { "catppuccin/nvim", name = "catppuccin" },
+
+    -- Debugging
+    {
+        "mfussenegger/nvim-dap",
+        dependencies = {
+            "nvim-neotest/nvim-nio",
+            {
+                "rcarriga/nvim-dap-ui",
+                config = function()
+                    require("dapui").setup()
+                end,
+            },
+            "jay-babu/mason-nvim-dap.nvim",
+            "theHamsta/nvim-dap-virtual-text",
+        },
+        config = function()
+            local dap = require("dap")
+            local dapui = require("dapui")
+
+            dap.listeners.after.event_initialized["dapui_config"] = function()
+                dapui.open()
+            end
+            dap.listeners.before.event_terminated["dapui_config"] = function()
+                dapui.close()
+            end
+            dap.listeners.before.event_exited["dapui_config"] = function()
+                dapui.close()
+            end
+        end,
+    },
+
+    -- Code quality tools
+    "mfussenegger/nvim-lint",
+    "stevearc/conform.nvim",
+
+    -- Editing enhancements
+    "windwp/nvim-autopairs",
+    "numToStr/Comment.nvim",
+}, {
+    defaults = { lazy = true } --Lazy load all plugins by default
+})
+
+--------------------------------------------------
+-- BASIC SETTINGS
+--------------------------------------------------
+local set_options = require("tarun.set")
+set_options()
+
+--------------------------------------------------
+-- COLOR SCHEME
+--------------------------------------------------
+vim.defer_fn(function()
+    vim.cmd.colorscheme("catppuccin-mocha")
+end, 100)
+
+--------------------------------------------------
+-- KEYBINDINGS
+--------------------------------------------------
+-- Set leader key
+vim.keymap.set("n", "<Space>", "<Nop>")
+vim.g.mapleader = " "
+
+local function map(mode, lhs, rhs, opts)
+    local options = { noremap = true, silent = true }
+    if opts then
+        options = vim.tbl_extend("force", options, opts)
+    end
+    vim.keymap.set(mode, lhs, rhs, options)
+end
+
+-- Basic operations
+map("n", "<leader>s", ":w<CR>", { desc = "Save file" })
+map("n", "<leader>q", ":q<CR>", { desc = "Quit" })
+map("n", "<leader>w", ":set wrap!<CR>", { desc = "Toggle line wrap" })
+
+-- Window navigation
+map("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+map("n", "<C-j>", "<C-w>j", { desc = "Move to window below" })
+map("n", "<C-k>", "<C-w>k", { desc = "Move to window above" })
+map("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+
+-- Window resizing
+map("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase window height" })
+map("n", "<C-Down>", ":resize -2<CR>", { desc = "Decrease window height" })
+map("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Decrease window width" })
+map("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase window width" })
+
+-- Buffer management
+map("n", "<Tab>", ":bnext<CR>", { desc = "Next buffer" })
+map("n", "<S-Tab>", ":bprevious<CR>", { desc = "Previous buffer" })
+map("n", "<leader>bd", ":bd<CR>", { desc = "Delete buffer" })
+map("n", "<leader>bl", ":ls<CR>", { desc = "List buffers" })
+
+-- Search
+map("n", "<leader>h", ":noh<CR>", { desc = "Clear search highlighting" })
+
+-- File explorer
+map("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+
+-- LSP keybindings
+map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+map("n", "K", vim.lsp.buf.hover, { desc = "Show LSP hover info" })
+map("n", "gr", vim.lsp.buf.references, { desc = "Find references" })
+map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
+map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code actions" })
+
+-- Formatting
+map("n", "<leader>f", function()
+    require("conform").format({ async = true, lsp_fallback = true })
+end, { desc = "Format file" })
+
+-- Initialize Comment.nvim
+require('Comment').setup({
+    -- Optional configuration options
+    padding = true,
+    sticky = true,
+    ignore = nil,
+    toggler = {
+        line = 'gcc',
+        block = 'gbc',
+    },
+    opleader = {
+        line = 'gc',
+        block = 'gb',
+    },
+})
+
+-- Comments keymaps (using Comment.nvim API)
+map("n", "<leader>/", function()
+    require('Comment.api').toggle.linewise.current()
+end, { desc = "Toggle comment" })
+map("v", "<leader>/", '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>',
+    { desc = "Toggle comment for selection" })
+
+-- Enhanced Telescope keymaps
+local builtin = require('telescope.builtin')
+map('n', '<leader>ff', builtin.find_files, { desc = "Find files" })
+map('n', '<leader>fg', builtin.live_grep, { desc = "Live grep" })
+map('n', '<leader>fb', builtin.buffers, { desc = "Find buffers" })
+map('n', '<leader>fh', builtin.help_tags, { desc = "Help tags" })
+map('n', '<leader>fr', builtin.oldfiles, { desc = "Recent files" })
+map('n', '<leader>fs', builtin.grep_string, { desc = "Find string under cursor" })
+map('n', '<leader>fc', builtin.commands, { desc = "Find commands" })
+
+--------------------------------------------------
+-- LSP CONFIGURATION
+--------------------------------------------------
+-- Mason setup (package manager for LSP servers)
+local status_mason, mason = pcall(require, "mason")
+if status_mason then
+    mason.setup({
+        ui = {
+            icons = {
+                package_installed = "[+]",
+                package_pending = "[~]",
+                package_uninstalled = "[-]",
+            },
+        },
+    })
+else
+    vim.notify("Mason not found, skipping setup", vim.log.levels.WARN)
+end
+
+-- Mason-lspconfig setup
+local status_mason_lspconfig, mason_lspconfig = pcall(require, "mason-lspconfig")
+if status_mason_lspconfig then
+    mason_lspconfig.setup({
+        ensure_installed = { "pyright", "gopls", "ts_ls", "lua_ls" },
+    })
+else
+    vim.notify("Mason-lspconfig not found, skipping setup", vim.log.levels.WARN)
+end
+
+-- Mason-nvim-dap setup
+local status_mason_dap, mason_dap = pcall(require, "mason-nvim-dap")
+if status_mason_dap then
+    mason_dap.setup({
+        ensure_installed = {
+            "python",           -- Python debug adapter
+            "delve",            -- Go debug adapter
+            "js-debug-adapter", -- JavaScript/TypeScript debug adapter
+        },
+        automatic_installation = true,
+    })
+else
+    vim.notify("Mason-nvim-dap not found, skipping setup", vim.log.levels.WARN)
+end
+
+-- LSP server configurations
+local status_lspconfig, lspconfig = pcall(require, "lspconfig")
+if status_lspconfig then
+    -- Add capabilities for better completion support
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+    capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+    -- Common LSP setup function
+    local function setup_lsp(server, config)
+        config = config or {}
+        config.capabilities = capabilities
+        config.on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+        end
+        lspconfig[server].setup(config)
+    end
+
+    -- Setup servers with enhanced configurations
+    setup_lsp("gopls", {
+        settings = {
+            gopls = {
+                analyses = {
+                    unusedparams = true,
+                    shadow = true,
+                },
+                staticcheck = true,
+                gofumpt = true,
+            },
+        },
+    })
+
+    -- TypeScript LSP setup
+    lspconfig.ts_ls.setup({
+        settings = {
+            typescript = {
+                inlayHints = {
+                    includeInlayParameterNameHints = "all",
+                    includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                    includeInlayFunctionParameterTypeHints = true,
+                    includeInlayVariableTypeHints = true,
+                    includeInlayPropertyDeclarationTypeHints = true,
+                    includeInlayFunctionLikeReturnTypeHints = true,
+                    includeInlayEnumMemberValueHints = true,
+                },
+            },
+            javascript = {
+                inlayHints = {
+                    includeInlayParameterNameHints = "all",
+                    includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                    includeInlayFunctionParameterTypeHints = true,
+                    includeInlayVariableTypeHints = true,
+                    includeInlayPropertyDeclarationTypeHints = true,
+                    includeInlayFunctionLikeReturnTypeHints = true,
+                    includeInlayEnumMemberValueHints = true,
+                },
+            },
+        },
+    })
+
+    -- Python LSP setup
+    lspconfig.pyright.setup({
+        settings = {
+            python = {
+                analysis = {
+                    typeCheckingMode = "basic",
+                    autoSearchPaths = true,
+                    useLibraryCodeForTypes = true,
+                },
+            },
+        },
+    })
+
+    -- Lua LSP setup
+    lspconfig.lua_ls.setup({
+        settings = {
+            Lua = {
+                diagnostics = {
+                    globals = { "vim" },
+                },
+                workspace = {
+                    library = vim.api.nvim_get_runtime_file("", true),
+                    checkThirdParty = false,
+                },
+                telemetry = {
+                    enable = false,
+                },
+            },
+        },
+    })
+else
+    vim.notify("LSP config not found, skipping setup", vim.log.levels.WARN)
+end
+
+-- Float diagnostic on cursor hold
+vim.api.nvim_create_autocmd("CursorHold", {
+    pattern = "*",
+    callback = function()
+        vim.diagnostic.open_float(nil, { focusable = false, border = "rounded" })
+    end,
+})
+
+-- Configure diagnostics
+vim.diagnostic.config({
+    virtual_text = {
+        prefix = '●', -- Could be '■', '▎', 'x'
+        spacing = 4,
+        source = "always",
+    },
+    float = {
+        source = "always",
+        border = "rounded",
+        header = "",
+        prefix = "",
+    },
+    signs = true,
+    underline = true,
+    update_in_insert = false,
+    severity_sort = true,
+})
+
+-- Customize diagnostic signs with simple characters
+local signs = { Error = "E", Warn = "W", Hint = "H", Info = "I" }
+for type, icon in pairs(signs) do
+    local hl = "DiagnosticSign" .. type
+    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
+
+--------------------------------------------------
+-- DEBUGGING CONFIGURATION (DAP)
+--------------------------------------------------
+local status_dap, dap = pcall(require, "dap")
+if status_dap then
+    -- Python adapter setup
+    dap.adapters.python = {
+        type = "executable",
+        command = "python",
+        args = { "-m", "debugpy.adapter" },
+    }
+
+    dap.configurations.python = {
+        {
+            type = "python",
+            request = "launch",
+            name = "Launch file",
+            program = "${file}",
+            pythonPath = function()
+                return "python"
+            end,
+        },
+    }
+
+    -- Go adapter setup
+    dap.adapters.delve = {
+        type = "server",
+        port = "${port}",
+        executable = {
+            command = "dlv",
+            args = { "dap", "-l", "127.0.0.1:${port}" },
+        },
+    }
+
+    dap.configurations.go = {
+        {
+            type = "delve",
+            name = "Debug",
+            request = "launch",
+            program = "${file}",
+        },
+        {
+            type = "delve",
+            name = "Debug test",
+            request = "launch",
+            mode = "test",
+            program = "${file}",
+        },
+    }
+
+    -- JavaScript/TypeScript adapter setup
+    dap.adapters["pwa-node"] = {
+        type = "server",
+        host = "localhost",
+        port = "${port}",
+        executable = {
+            command = "js-debug-adapter",
+            args = { "${port}" },
+        },
+    }
+
+    dap.configurations.javascript = {
+        {
+            type = "pwa-node",
+            request = "launch",
+            name = "Launch file",
+            program = "${file}",
+            cwd = "${workspaceFolder}",
+        },
+    }
+
+    dap.configurations.typescript = dap.configurations.javascript
+else
+    vim.notify("DAP not found, skipping setup", vim.log.levels.WARN)
+end
+
+-- DAP UI setup
+local status_dapui, dapui = pcall(require, "dapui")
+if status_dapui then
+    dapui.setup({
+        icons = {
+            expanded = ">",
+            collapsed = "v",
+            current_frame = "*",
+        },
+        mappings = {
+            -- Use a table with strings
+            expand = { "<CR>", "<2-LeftMouse>" },
+            open = "o",
+            remove = "d",
+            edit = "e",
+            repl = "r",
+            toggle = "t",
+        },
+        -- Rest of your dapui config...
+    })
+
+    -- Auto open/close dapui
+    dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+    end
+    dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+    end
+    dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+    end
+
+    -- DAP UI keymaps
+    map("n", "<leader>dt", function() dapui.toggle() end, { desc = "Toggle DAP UI" })
+    map("n", "<leader>db", function() dap.toggle_breakpoint() end, { desc = "Toggle breakpoint" })
+    map("n", "<leader>dc", function() dap.continue() end, { desc = "Start/continue debugging" })
+    map("n", "<leader>do", function() dap.step_over() end, { desc = "Step over" })
+    map("n", "<leader>di", function() dap.step_into() end, { desc = "Step into" })
+    map("n", "<leader>dx", function() dap.terminate() end, { desc = "Terminate debug session" })
+else
+    vim.notify("DAP UI not found, skipping setup", vim.log.levels.WARN)
+end
+
+--------------------------------------------------
+-- COMPLETION SETUP
+--------------------------------------------------
+local status_cmp, cmp = pcall(require, "cmp")
+if status_cmp then
+    local status_luasnip, luasnip = pcall(require, "luasnip")
+    if not status_luasnip then
+        vim.notify("LuaSnip not found, completion might not work properly", vim.log.levels.WARN)
+        return
+    end
+
+    -- Load snippets from friendly-snippets
+    require("luasnip.loaders.from_vscode").lazy_load()
+
+    cmp.setup({
+        snippet = {
+            expand = function(args)
+                luasnip.lsp_expand(args.body)
+            end,
+        },
+        mapping = cmp.mapping.preset.insert({
+            ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+            ["<C-f>"] = cmp.mapping.scroll_docs(4),
+            ["<C-Space>"] = cmp.mapping.complete(),
+            ["<C-e>"] = cmp.mapping.abort(),
+            ["<CR>"] = cmp.mapping.confirm({ select = true }),
+            ["<Tab>"] = cmp.mapping(function(fallback)
+                if cmp.visible() then
+                    cmp.select_next_item()
+                elseif luasnip.expand_or_jumpable() then
+                    luasnip.expand_or_jump()
+                elseif vim.fn.col(".") > 1 then
+                    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "n", true)
+                else
+                    fallback()
+                end
+            end, { "i", "s" }),
+            ["<S-Tab>"] = cmp.mapping(function(fallback)
+                if cmp.visible() then
+                    cmp.select_prev_item()
+                elseif luasnip.jumpable(-1) then
+                    luasnip.jump(-1)
+                else
+                    fallback()
+                end
+            end, { "i", "s" }),
+        }),
+        sources = cmp.config.sources({
+            { name = "nvim_lsp" },
+            { name = "luasnip" },
+            { name = "buffer" },
+            { name = "path" },
+        }),
+        sorting = {
+            comparators = {
+                cmp.config.compare.offset,
+                cmp.config.compare.exact,
+                cmp.config.compare.score,
+                require("cmp-under-comparator").under,
+                cmp.config.compare.kind,
+                cmp.config.compare.sort_text,
+                cmp.config.compare.length,
+                cmp.config.compare.order,
+            },
+        },
+        window = {
+            completion = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered(),
+        },
+        formatting = {
+            format = function(entry, vim_item)
+                -- Set menu icon source with ASCII characters
+                vim_item.kind = string.format('%s', vim_item.kind)
+                vim_item.menu = ({
+                    nvim_lsp = "[LSP]",
+                    luasnip = "[Snip]",
+                    buffer = "[Buf]",
+                    path = "[Path]",
+                })[entry.source.name]
+                return vim_item
+            end,
+        },
+        -- Add better completion experience
+        completion = {
+            completeopt = 'menu,menuone,noinsert',
+            keyword_length = 1,
+        },
+        -- Add documentation window
+        window = {
+            documentation = cmp.config.window.bordered({
+                border = 'rounded',
+                winhighlight = 'NormalFloat:Pmenu,NormalFloat:Pmenu,CursorLine:PmenuSel,Search:None',
+            }),
+            completion = cmp.config.window.bordered({
+                border = 'rounded',
+                winhighlight = 'NormalFloat:Pmenu,NormalFloat:Pmenu,CursorLine:PmenuSel,Search:None',
+            }),
+        },
+        -- Improve formatting
+        formatting = {
+            format = function(entry, vim_item)
+                -- Kind icons
+                local kind_icons = {
+                    Text = "",
+                    Method = "",
+                    Function = "",
+                    Constructor = "",
+                    Field = "",
+                    Variable = "",
+                    Class = "ﴯ",
+                    Interface = "",
+                    Module = "",
+                    Property = "ﰠ",
+                    Unit = "",
+                    Value = "",
+                    Enum = "",
+                    Keyword = "",
+                    Snippet = "",
+                    Color = "",
+                    File = "",
+                    Reference = "",
+                    Folder = "",
+                    EnumMember = "",
+                    Constant = "",
+                    Struct = "",
+                    Event = "",
+                    Operator = "",
+                    TypeParameter = ""
+                }
+                vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind)
+                return vim_item
+            end
+        },
+    })
+
+    -- Command line completion
+    cmp.setup.cmdline("/", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = { { name = "buffer" } },
+    })
+    cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
+    })
+else
+    vim.notify("CMP not found, skipping setup", vim.log.levels.WARN)
+end
+
+--------------------------------------------------
+-- TREESITTER CONFIGURATION
+--------------------------------------------------
+
+require("lazy").setup({
+    -- ... other plugin configurations ...
+
+    -- Import Treesitter configuration from separate file
+    require("tarun.treesitter"),
+
+    -- ... other plugin configurations ...
+})
+
+--[[
+local status_treesitter, treesitter = pcall(require, "nvim-treesitter.configs")
+if status_treesitter then
+    treesitter.setup({
+        ensure_installed = { "go", "javascript", "typescript", "lua", "python", "bash", "c", "cpp", "json", "yaml", "html", "css" },
+        highlight = {
+            enable = true,
+            additional_vim_regex_highlighting = false,
+        },
+        -- FIXED: Rainbow configuration
+        rainbow = {
+            enable = true,
+            extended_mode = true,
+            max_file_lines = nil,
+            -- Remove the strategy line as it's incorrect for nvim-ts-rainbow2
+        },
+        indent = { enable = true },
+        incremental_selection = {
+            enable = true,
+            keymaps = {
+                init_selection = "gnn",
+                node_incremental = "grn",
+                scope_incremental = "grc",
+                node_decremental = "grm",
+            },
+        },
+    })
+else
+    vim.notify("Treesitter not found, skipping setup", vim.log.levels.WARN)
+end
+
+-- Treesitter context setup (shows context at the top of the screen)
+local status_context, context = pcall(require, "treesitter-context")
+if status_context then
+    context.setup({
+        enable = true,
+        multiwindow = true,
+        max_lines = 0,
+        min_window_height = 0,
+        line_numbers = true,
+        multiline_threshold = 20,
+        trim_scope = "outer",
+        mode = "cursor",
+        separator = nil,
+        zindex = 20,
+        on_attach = nil,
+    })
+else
+    vim.notify("Treesitter-context not found, skipping setup", vim.log.levels.WARN)
+end
+]]--
+
+--------------------------------------------------
+-- NVIM-TREE CONFIGURATION
+--------------------------------------------------
+local status_nvimtree, nvimtree = pcall(require, "nvim-tree")
+if status_nvimtree then
+    nvimtree.setup({
+        view = {
+            width = 30,
+            side = "left",
+            adaptive_size = false,
+        },
+        renderer = {
+            group_empty = true,
+            icons = {
+                show = {
+                    file = true,
+                    folder = true,
+                    folder_arrow = true,
+                    git = true,
+                },
+                glyphs = {
+                    default = "*",
+                    symlink = "S",
+                    folder = {
+                        arrow_closed = ">",
+                        arrow_open = "v",
+                        default = "+",
+                        open = "-",
+                        empty = "[]",
+                        empty_open = "[]",
+                        symlink = "S+",
+                        symlink_open = "S-",
+                    },
+                    git = {
+                        unstaged = "!",
+                        staged = "✓",
+                        unmerged = "U",
+                        renamed = "R",
+                        untracked = "?",
+                        deleted = "D",
+                        ignored = "I",
+                    },
+                },
+            },
+        },
+        filters = {
+            dotfiles = false,
+            custom = { "^.git$" },
+        },
+        actions = {
+            open_file = {
+                window_picker = {
+                    enable = false,
+                },
+                resize_window = true,
+            },
+        },
+        git = {
+            enable = true,
+            ignore = false,
+        },
+    })
+else
+    vim.notify("Nvim-tree not found, skipping setup", vim.log.levels.WARN)
+end
+
+--------------------------------------------------
+-- DEVICONS CONFIGURATION
+--------------------------------------------------
+local status_devicons, devicons = pcall(require, "nvim-web-devicons")
+if status_devicons then
+    devicons.setup({
+        -- Use simpler icons that are more likely to display correctly
+        override = {
+            default_icon = {
+                icon = "*",
+                color = "#6d8086",
+                name = "Default",
+            },
+            -- Add specific file type overrides with simple icons
+            lua = {
+                icon = "L",
+                color = "#51a0cf",
+                name = "Lua",
+            },
+            py = {
+                icon = "P",
+                color = "#ffbc03",
+                name = "Python",
+            },
+            js = {
+                icon = "J",
+                color = "#cbcb41",
+                name = "JavaScript",
+            },
+            -- Add more as needed
+        },
+        default = true,
+        strict = true,
+    })
+else
+    vim.notify("Devicons not found, skipping setup", vim.log.levels.WARN)
+end
+
+--------------------------------------------------
+-- TELESCOPE CONFIGURATION
+--------------------------------------------------
+local status_telescope, telescope = pcall(require, "telescope")
+if status_telescope then
+    telescope.setup({
+        defaults = {
+            layout_strategy = "horizontal",
+            layout_config = {
+                horizontal = {
+                    preview_width = 0.6,
+                    width = 0.9,
+                    height = 0.8,
+                },
+            },
+            mappings = {
+                i = {
+                    ["<C-s>"] = require("telescope.actions").select_horizontal,
+                    ["<C-v>"] = require("telescope.actions").select_vertical,
+                    ["<C-t>"] = require("telescope.actions").select_tab,
+                    ["<Esc>"] = require("telescope.actions").close,
+                },
+                n = {
+                    ["<C-s>"] = require("telescope.actions").select_horizontal,
+                    ["<C-v>"] = require("telescope.actions").select_vertical,
+                    ["<C-t>"] = require("telescope.actions").select_tab,
+                },
+            },
+            borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+            previewer = true,
+            preview_cutoff = 120,
+            file_previewer = require("telescope.previewers").vim_buffer_cat.new,
+            grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
+            file_ignore_patterns = { "node_modules", ".git", "vendor", "__pycache__", "dist" },
+        },
+        pickers = {
+            find_files = {
+                previewer = true,
+                hidden = true,
+            },
+            live_grep = {
+                additional_args = function()
+                    return { "--hidden" }
+                end,
+            },
+        },
+        extensions = {
+            -- Add any telescope extensions here
+        },
+    })
+else
+    vim.notify("Telescope not found, skipping setup", vim.log.levels.WARN)
+end
+
+--------------------------------------------------
+-- THEME CONFIGURATION
+--------------------------------------------------
+local status_catppuccin, catppuccin = pcall(require, "catppuccin")
+if status_catppuccin then
+    catppuccin.setup({
+        flavour = "auto",
+        background = {
+            light = "latte",
+            dark = "mocha",
+        },
+        transparent_background = false,
+        show_end_of_buffer = false,
+        term_colors = false,
+        dim_inactive = {
+            enabled = false,
+            shade = "dark",
+            percentage = 0.15,
+        },
+        no_italic = false,
+        no_bold = false,
+        no_underline = false,
+        styles = {
+            comments = { "italic" },
+            conditionals = { "italic" },
+            loops = {},
+            functions = {},
+            keywords = {},
+            strings = {},
+            variables = {},
+            numbers = {},
+            booleans = {},
+            properties = {},
+            types = {},
+            operators = {},
+        },
+        color_overrides = {},
+        custom_highlights = {},
+        default_integrations = true,
+        integrations = {
+            cmp = true,
+            gitsigns = true,
+            nvimtree = true,
+            treesitter = true,
+            notify = false,
+            mini = {
+                enabled = true,
+                indentscope_color = "",
+            },
+            telescope = true,
+            which_key = true,
+            dap = {
+                enabled = true,
+                enable_ui = true,
+            },
+        },
+    })
+
+    vim.cmd.colorscheme("catppuccin")
+else
+    vim.notify("Catppuccin not found, falling back to default colorscheme", vim.log.levels.WARN)
+end
+
