@@ -6,8 +6,7 @@ return {
 	config = function()
 		require("lualine").setup({
 			options = {
-				-- TODO: this is not found, need to fix this
-				theme = "tokyonight", -- Set a theme (optional)
+				theme = "catppuccin", -- Use catppuccin theme to match colorscheme
 				icons_enabled = true,
 				section_separators = "",
 				component_separators = "",
