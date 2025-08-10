@@ -51,3 +51,9 @@ require("tarun.nvimtree")
 --------------------------------------------------
 require("tarun.icons")
 
+--------------------------------------------------
+-- HEALTH CHECK FOR DEPENDENCIES
+--------------------------------------------------
+-- Check for missing dependencies on startup
+require("tarun.health").check_dependencies()
+

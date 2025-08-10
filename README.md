@@ -187,14 +187,68 @@ mv ~/.config/nvim.backup-TIMESTAMP ~/.config/nvim
 
 ## Requirements
 
+### Core Requirements
 - Neovim >= 0.9.0
 - Git
 - Node.js (for many LSP servers)
 - Python 3 (for Python LSP)
-- Go (for Go LSP)
-- Rust (optional, for Rust development)
-- ripgrep (for telescope grep)
-- fd (for telescope file finding)
+
+### System Dependencies (REQUIRED)
+
+#### **Linux (Ubuntu/Debian)**
+```bash
+# REQUIRED for clipboard support
+sudo apt-get install xclip
+
+# Optional but recommended
+sudo apt-get install ripgrep fd-find build-essential
+```
+
+#### **Linux (Fedora/RHEL)**
+```bash
+# REQUIRED for clipboard support
+sudo dnf install xclip
+
+# Optional but recommended
+sudo dnf install ripgrep fd-find gcc-c++
+```
+
+#### **macOS**
+```bash
+# Clipboard works natively on macOS
+# Optional but recommended
+brew install ripgrep fd
+```
+
+#### **Windows (WSL)**
+```bash
+# Same as Linux Ubuntu/Debian above
+sudo apt-get install xclip
+```
+
+### Optional Development Tools
+- Go (for Go development)
+- Rust (for Rust development)
+- Docker (for containerized development)
+
+## Quick Installation
+
+### Automated Installation (Linux/macOS)
+```bash
+# Clone the config
+git clone https://github.com/yourusername/nvim-config ~/.config/nvim
+
+# Run installation script
+cd ~/.config/nvim
+chmod +x install.sh
+./install.sh
+```
+
+### Manual Installation
+1. Install system dependencies (see above)
+2. Clone this repository to `~/.config/nvim`
+3. Open Neovim and let plugins install
+4. Run `:checkhealth` to verify everything is working
 
 ## Customization
 
