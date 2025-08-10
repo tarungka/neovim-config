@@ -40,7 +40,7 @@ map("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location list item" })
 map("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Previous location list item" })
 
 -- Search and replace word
-map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search and replace word under cursor" })
+map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search and replace word under cursor in the ENTIRE file" })
 
 -- Make file executable
 map("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
@@ -56,3 +56,6 @@ map("n", "Q", "<nop>", { desc = "Disable Ex mode" })
 
 -- Tmux sessionizer
 --map("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>", { desc = "Tmux: New window with sessionizer" })
+
+map("n", "<leader>lg", "<cmd>LazyGit<cr>", {desc = "LazyGit"})
+

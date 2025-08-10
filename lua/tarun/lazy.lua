@@ -87,4 +87,6 @@ return {
 	require("tarun.diffview"),
 	require("tarun.nvim-notify"),
 	require("tarun.bufferline"),
+	require("tarun.llm"),
+	require("tarun.lazygit"),
 }

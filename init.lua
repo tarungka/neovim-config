@@ -34,8 +34,8 @@ require("tarun.theme")
 -- KEYBINDINGS
 --------------------------------------------------
 -- Set leader key
-vim.keymap.set("n", "<Space>", "<Nop>")
 vim.g.mapleader = " "
+vim.keymap.set("n", "<Space>", "<Nop>")
 
 require("tarun.remap")
 
