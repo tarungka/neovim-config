@@ -1,4 +1,7 @@
 return {
+	-- Performance optimizations
+	require("tarun.performance"),
+
 	-- Plugin specification
 	{
 		"neovim/nvim-lspconfig",
@@ -7,6 +10,9 @@ return {
 			"williamboman/mason-lspconfig.nvim",
 		},
 	},
+
+	-- LSP Enhancements
+	require("tarun.lsp-enhancements"),
 
 	-- Autocompletion
 	require("tarun.autocomplete"),
@@ -30,8 +36,8 @@ return {
 	require("tarun.telescope"),
 
 	-- UI Enhancements
-	-- "nvim-lualine/lualine.nvim",
 	require("tarun.lualine"),
+	require("tarun.ui-enhancements"),
 	"folke/tokyonight.nvim",
 	{ "catppuccin/nvim", name = "catppuccin" },
 
@@ -39,22 +45,7 @@ return {
 	require("tarun.dap"),
 
 	-- Code quality tools
-	"mfussenegger/nvim-lint",
-	-- TODO: move this to a different file
-	{
-		"stevearc/conform.nvim",
-		event = "BufWritePre",
-		config = function()
-			require("conform").setup({
-				formatters_by_ft = {
-					lua = { "stylua" },
-					go = { "gofmt" },
-					python = { "black" },
-					javascript = { "prettier" },
-				},
-			})
-		end,
-	},
+	require("tarun.code-quality"),
 
 	{
 		"kylechui/nvim-surround",
@@ -83,10 +74,17 @@ return {
 	require("tarun.which-key"),
 	require("tarun.toggleterm"),
 	require("tarun.git-fugitive"),
+	require("tarun.harpoon"),
+
+	-- Navigation improvements
+	require("tarun.navigation"),
 
 	require("tarun.diffview"),
 	require("tarun.nvim-notify"),
 	require("tarun.bufferline"),
 	require("tarun.llm"),
 	require("tarun.lazygit"),
+
+	-- Modern features
+	require("tarun.modern-features"),
 }

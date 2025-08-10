@@ -18,7 +18,22 @@ end
 local status_mason_lspconfig, mason_lspconfig = pcall(require, "mason-lspconfig")
 if status_mason_lspconfig then
     mason_lspconfig.setup({
-        ensure_installed = { "pyright", "gopls", "ts_ls", "lua_ls" },
+        ensure_installed = { 
+            "pyright", 
+            "gopls", 
+            "ts_ls", 
+            "lua_ls",
+            "rust_analyzer",
+            "clangd",
+            "cssls",
+            "tailwindcss",
+            "bashls",
+            "jsonls",
+            "yamlls",
+            "html",
+            "dockerls",
+        },
+        automatic_installation = true,
     })
 else
     vim.notify("Mason-lspconfig not found, skipping setup", vim.log.levels.WARN)
@@ -54,6 +69,8 @@ if status_lspconfig then
         config.on_attach = function(client, bufnr)
             -- Enable completion triggered by <c-x><c-o>
             vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
         end
         lspconfig[server].setup(config)
     end
@@ -74,6 +91,7 @@ if status_lspconfig then
 
     -- TypeScript LSP setup
     lspconfig.ts_ls.setup({
+        capabilities = capabilities,
         settings = {
             typescript = {
                 inlayHints = {
@@ -102,6 +120,7 @@ if status_lspconfig then
 
     -- Python LSP setup
     lspconfig.pyright.setup({
+        capabilities = capabilities,
         settings = {
             python = {
                 analysis = {
@@ -115,6 +134,7 @@ if status_lspconfig then
 
     -- Lua LSP setup
     lspconfig.lua_ls.setup({
+        capabilities = capabilities,
         settings = {
             Lua = {
                 diagnostics = {
@@ -129,6 +149,71 @@ if status_lspconfig then
                 },
             },
         },
+    })
+    -- Rust LSP setup
+    lspconfig.rust_analyzer.setup({
+        capabilities = capabilities,
+        settings = {
+            ["rust-analyzer"] = {
+                checkOnSave = {
+                    command = "clippy",
+                },
+                cargo = {
+                    loadOutDirsFromCheck = true,
+                },
+                procMacro = {
+                    enable = true,
+                },
+            },
+        },
+    })
+
+    -- Clangd setup for C/C++
+    lspconfig.clangd.setup({
+        capabilities = capabilities,
+        cmd = {
+            "clangd",
+            "--background-index",
+            "--clang-tidy",
+            "--header-insertion=iwyu",
+            "--completion-style=detailed",
+            "--function-arg-placeholders",
+        },
+    })
+
+    -- CSS/SCSS LSP
+    lspconfig.cssls.setup({
+        capabilities = capabilities,
+    })
+
+    -- HTML LSP
+    lspconfig.html.setup({
+        capabilities = capabilities,
+    })
+
+    -- JSON LSP
+    lspconfig.jsonls.setup({
+        capabilities = capabilities,
+    })
+
+    -- YAML LSP
+    lspconfig.yamlls.setup({
+        capabilities = capabilities,
+    })
+
+    -- Bash LSP
+    lspconfig.bashls.setup({
+        capabilities = capabilities,
+    })
+
+    -- Docker LSP
+    lspconfig.dockerls.setup({
+        capabilities = capabilities,
+    })
+
+    -- Tailwind CSS
+    lspconfig.tailwindcss.setup({
+        capabilities = capabilities,
     })
 else
     vim.notify("LSP config not found, skipping setup", vim.log.levels.WARN)

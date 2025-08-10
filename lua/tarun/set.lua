@@ -30,11 +30,8 @@ local function set_options()
   vim.opt.smartindent = true
   vim.opt.timeoutlen = 500
 
-  -- **MACOS CLIPBOARD FIX**
-  vim.opt.clipboard:append("unnamedplus") -- Preferred, but test first.
-  if vim.fn.has("clipboard") then
-    vim.opt.clipboard:append("unnamed")
-  end
+  -- **CLIPBOARD FIX**
+  vim.opt.clipboard = "unnamedplus" -- Use system clipboard
 
   -- Search behavior
   vim.opt.ignorecase = true
@@ -43,7 +40,6 @@ local function set_options()
   vim.opt.hlsearch = true
 
   -- File behavior
-  vim.opt.undofile = false
   vim.opt.backup = false
   vim.opt.backupdir = vim.fn.stdpath("config") .. "/backup/"
   vim.opt.swapfile = false
@@ -57,20 +53,10 @@ local function set_options()
 
   vim.opt.guicursor = ""
   vim.opt.wrap = false
-  -- Changing this because os.getenv is for vimscript and vim.fn is for lua
   vim.opt.undodir = vim.fn.stdpath("data") .. "/undodir"
   vim.opt.undofile = true
-
-  -- Move configs from init.lua to here
-  vim.opt.hlsearch = false
-  vim.opt.incsearch = true
-
-  vim.opt.signcolumn = "yes"
   vim.opt.isfname:append("@-@")
-
-  vim.opt.updatetime = 50
-
-  -- vim.opt.colorcolumn = "80"
+  vim.opt.colorcolumn = "100"
 end
 
 return set_options
