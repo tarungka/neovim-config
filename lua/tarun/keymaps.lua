@@ -91,6 +91,18 @@ M.setup = function()
     -- Disable Ex mode
     map("n", "Q", "<nop>", { desc = "Disable Ex mode" })
 
+    -- Telescope keymaps
+    local telescope_ok, builtin = pcall(require, "telescope.builtin")
+    if telescope_ok then
+        map("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
+        map("n", "<leader>fg", builtin.live_grep, { desc = "Live grep" })
+        map("n", "<leader>fb", builtin.buffers, { desc = "Find buffers" })
+        map("n", "<leader>fh", builtin.help_tags, { desc = "Help tags" })
+        map("n", "<leader>fr", builtin.oldfiles, { desc = "Recent files" })
+        map("n", "<leader>fs", builtin.grep_string, { desc = "Find string under cursor" })
+        map("n", "<leader>fc", builtin.commands, { desc = "Find commands" })
+    end
+
     -- Terminal mappings
     -- Use <C-\><C-n> or jk to exit terminal mode instead of Esc to avoid conflicts
     map("t", "jk", [[<C-\><C-n>]], { desc = "Exit terminal mode" })

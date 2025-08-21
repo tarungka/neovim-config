@@ -1,4 +1,7 @@
 return {
+    -- NOTE: Wilder.nvim removed due to conflicts with Noice/cmp-cmdline
+    -- Use cmp-cmdline for command completions instead
+
     -- Noice.nvim for better command line UI
     {
         "folke/noice.nvim",
@@ -19,18 +22,8 @@ return {
                 lsp_doc_border = false,
             },
             cmdline = {
-                enabled = true,
-                view = "cmdline_popup",
-                opts = {},
-                format = {
-                    cmdline = { pattern = "^:", icon = ":", lang = "vim" },
-                    search_down = { kind = "search", pattern = "^/", icon = "/", lang = "regex" },
-                    search_up = { kind = "search", pattern = "^%?", icon = "?", lang = "regex" },
-                    filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
-                    lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
-                    help = { pattern = "^:%s*he?l?p?%s+", icon = "?" },
-                    input = {},
-                },
+                enabled = true,  -- Show command line
+                view = "cmdline",  -- Use classic bottom command line
             },
             messages = {
                 enabled = true,
@@ -41,7 +34,7 @@ return {
                 view_search = "virtualtext",
             },
             popupmenu = {
-                enabled = true,
+                enabled = false,  -- Disable to prevent conflicts with cmp-cmdline
                 backend = "nui",
                 kind_icons = {},
             },
