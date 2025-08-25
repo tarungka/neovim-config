@@ -92,6 +92,12 @@ if status_lspconfig then
     -- TypeScript LSP setup
     lspconfig.ts_ls.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
         settings = {
             typescript = {
                 inlayHints = {
@@ -121,6 +127,12 @@ if status_lspconfig then
     -- Python LSP setup
     lspconfig.pyright.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
         settings = {
             python = {
                 analysis = {
@@ -135,6 +147,12 @@ if status_lspconfig then
     -- Lua LSP setup
     lspconfig.lua_ls.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
         settings = {
             Lua = {
                 diagnostics = {
@@ -153,6 +171,12 @@ if status_lspconfig then
     -- Rust LSP setup
     lspconfig.rust_analyzer.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
         settings = {
             ["rust-analyzer"] = {
                 checkOnSave = {
@@ -171,6 +195,12 @@ if status_lspconfig then
     -- Clangd setup for C/C++
     lspconfig.clangd.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
         cmd = {
             "clangd",
             "--background-index",
@@ -184,36 +214,78 @@ if status_lspconfig then
     -- CSS/SCSS LSP
     lspconfig.cssls.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
     })
 
     -- HTML LSP
     lspconfig.html.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
     })
 
     -- JSON LSP
     lspconfig.jsonls.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
     })
 
     -- YAML LSP
     lspconfig.yamlls.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
     })
 
     -- Bash LSP
     lspconfig.bashls.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
     })
 
     -- Docker LSP
     lspconfig.dockerls.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
     })
 
     -- Tailwind CSS
     lspconfig.tailwindcss.setup({
         capabilities = capabilities,
+        on_attach = function(client, bufnr)
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+            -- Setup LSP keymaps
+            require("tarun.keymaps").lsp_keymaps(bufnr)
+        end,
     })
 else
     vim.notify("LSP config not found, skipping setup", vim.log.levels.WARN)
