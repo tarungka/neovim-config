@@ -25,6 +25,14 @@ return {
 		"fatih/vim-go",
 		build = ":GoUpdateBinaries",
 	},
+	{
+		"iamcco/markdown-preview.nvim",
+		build = "cd app && npm install",
+		ft = { "markdown" },
+		config = function()
+			vim.g.mkdp_auto_start = 0
+		end,
+	},
 
 	-- File navigation and fuzzy finding
 	{
@@ -46,6 +54,14 @@ return {
 
 	-- Code quality tools
 	require("tarun.code-quality"),
+	{
+		"stevearc/aerial.nvim",
+		opts = {
+			layout = { default_direction = "right", min_width = 28 },
+			show_guides = true,
+		},
+		keys = { { "<leader>oo", "<cmd>AerialToggle! right<CR>", desc = "Symbols Outline" } },
+	},
 
 	{
 		"kylechui/nvim-surround",
