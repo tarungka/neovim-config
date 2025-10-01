@@ -56,11 +56,16 @@ return {
 	require("tarun.code-quality"),
 	{
 		"stevearc/aerial.nvim",
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+		lazy = false,
 		opts = {
 			layout = { default_direction = "right", min_width = 28 },
 			show_guides = true,
 		},
-		keys = { { "<leader>oo", "<cmd>AerialToggle! right<CR>", desc = "Symbols Outline" } },
+		config = function(_, opts)
+			require("aerial").setup(opts)
+			vim.keymap.set("n", "<leader>to", "<cmd>AerialToggle! right<CR>", { noremap = true, silent = true, desc = "Toggle Outline" })
+		end,
 	},
 
 	{

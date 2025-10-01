@@ -110,43 +110,8 @@ colorscheme catppuccin-mocha " OTHER INSTLLED: tokyonight-night
 
 
 " === Keybindings ===
-nnoremap <Space> <Nop>    " Unmap space (useful for leader key)
-let mapleader=" "         " Set space as leader key
-
-" Fast saving with <leader>s
-nnoremap <leader>s :w<CR>
-
-" Fast quit with <leader>q
-nnoremap <leader>q :q<CR>
-
-" Better split navigation (Ctrl + hjkl)
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-
-" Resize splits using arrow keys
-nnoremap <C-Up> :resize +2<CR>
-nnoremap <C-Down> :resize -2<CR>
-nnoremap <C-Left> :vertical resize -2<CR>
-nnoremap <C-Right> :vertical resize +2<CR>
-
-" Clear search highlighting with <leader>h
-nnoremap <leader>h :noh<CR>
-" NvimTree
-nnoremap <leader>e :NvimTreeToggle<CR>
-" Telescope
-nnoremap <leader>ff :Telescope find_files<CR>
-nnoremap <leader>fg :Telescope live_grep<CR>
-nnoremap <leader>fb :Telescope buffers<CR>     " Switch between open buffers
-nnoremap <leader>fh :Telescope help_tags<CR>   " Search help documentation
-" Buffers
-nnoremap <Tab> :bnext<CR>       " Switch to next buffer
-nnoremap <S-Tab> :bprevious<CR> " Switch to previous buffer
-nnoremap <leader>bd :bd<CR>     " Close current buffer
-nnoremap <leader>bl :ls<CR>     " List all buffers
-
-nnoremap <leader>w :set wrap!<CR>
+" Note: All keybindings have been moved to lua/tarun/keymaps.lua for better organization
+" and to avoid conflicts. This file is kept for legacy purposes only.
 
 
 " === LSP Configuration ===

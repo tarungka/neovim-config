@@ -1,25 +1,32 @@
--- Centralized Keymaps Configuration
 local M = {}
 
-local function map(mode, lhs, rhs, opts)
-    local options = { noremap = true, silent = true }
-    if opts then
-        options = vim.tbl_extend("force", options, opts)
-    end
-    vim.keymap.set(mode, lhs, rhs, options)
-end
-
-M.setup = function()
-    -- Leader key
+function M.setup()
+    -- Set leader key
     vim.g.mapleader = " "
     vim.g.maplocalleader = " "
-    map("n", "<Space>", "<Nop>")
 
-    -- Alternative escape mappings (in case Escape is slow or problematic)
+    local map = vim.keymap.set
+    local opts = { noremap = true, silent = true }
+
+    -- ============================================
+    -- INSERT MODE
+    -- ============================================
     map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
     map("i", "jj", "<Esc>", { desc = "Exit insert mode (alternative)" })
 
-    -- Better window navigation
+    -- ============================================
+    -- FILE OPERATIONS
+    -- ============================================
+    map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
+    map("n", "<leader>q", ":q<CR>", { desc = "Quit" })
+    map("n", "<leader>Q", ":qa!<CR>", { desc = "Quit all without saving" })
+    map("n", "<leader>x", "<cmd>!chmod +x %<CR>", { desc = "Make file executable" })
+    map("n", "<leader><leader>", function() vim.cmd("so") end, { desc = "Reload config" })
+
+    -- ============================================
+    -- WINDOW MANAGEMENT
+    -- ============================================
+    -- Window navigation
     map("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
     map("n", "<C-j>", "<C-w>j", { desc = "Move to window below" })
     map("n", "<C-k>", "<C-w>k", { desc = "Move to window above" })
@@ -31,45 +38,66 @@ M.setup = function()
     map("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Decrease window width" })
     map("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase window width" })
 
-    -- Basic operations
-    map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
-    map("n", "<leader>q", ":q<CR>", { desc = "Quit" })
-    map("n", "<leader>Q", ":qa!<CR>", { desc = "Quit all without saving" })
-
-    -- Buffer navigation
-    map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
-    map("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
+    -- ============================================
+    -- BUFFER MANAGEMENT
+    -- ============================================
     map("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
     map("n", "<leader>bn", ":enew<CR>", { desc = "New buffer" })
+    map("n", "<leader>bl", ":ls<CR>", { desc = "List buffers" })
+    map("n", "[b", ":bprevious<CR>", { desc = "Previous buffer" })
+    map("n", "]b", ":bnext<CR>", { desc = "Next buffer" })
+    map("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
+    map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
+    map("n", "<Tab>", ":BufferLineCycleNext<CR>", { desc = "Next buffer (BufferLine)" })
+    map("n", "<S-Tab>", ":BufferLineCyclePrev<CR>", { desc = "Previous buffer (BufferLine)" })
 
-    -- Better indenting
-    map("v", "<", "<gv", { desc = "Indent left" })
-    map("v", ">", ">gv", { desc = "Indent right" })
+    -- ============================================
+    -- NAVIGATION
+    -- ============================================
+    map("n", "<C-d>", "<C-d>zz", { desc = "Page down centered" })
+    map("n", "<C-u>", "<C-u>zz", { desc = "Page up centered" })
+    map("n", "n", "nzzzv", { desc = "Next search result centered" })
+    map("n", "N", "Nzzzv", { desc = "Previous search result centered" })
+    map("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 
-    -- Move text up and down
-    map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selected lines down" })
-    map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selected lines up" })
+    -- ============================================
+    -- SEARCH & REPLACE
+    -- ============================================
+    map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+    map("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+
+    -- ============================================
+    -- EDITING
+    -- ============================================
+    -- Move lines in visual mode
+    map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line down" })
+    map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
+
+    -- Move lines in normal mode
     map("n", "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })
     map("n", "<A-k>", ":m .-2<CR>==", { desc = "Move line up" })
 
-    -- Better paste
-    map("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
-    map("n", "<leader>d", [["_d]], { desc = "Delete without yanking" })
-    map("v", "<leader>d", [["_d]], { desc = "Delete without yanking" })
-
-    -- Search improvements
-    map("n", "n", "nzzzv", { desc = "Next search result centered" })
-    map("n", "N", "Nzzzv", { desc = "Previous search result centered" })
-    map("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
-
-    -- Scrolling
-    map("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center" })
-    map("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center" })
-
     -- Join lines
-    map("n", "J", "mzJ`z", { desc = "Join lines and maintain cursor position" })
+    map("n", "J", "mzJ`z", { desc = "Join lines without cursor move" })
 
-    -- Quickfix and location list
+    -- Better indenting (stay in visual mode)
+    map("v", "<", "<gv", { desc = "Indent left" })
+    map("v", ">", ">gv", { desc = "Indent right" })
+
+    -- Paste and delete without yanking
+    map("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
+    map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete without yanking" })
+
+    -- System clipboard
+    map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
+    map("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
+
+    -- Disable Ex mode
+    map("n", "Q", "<nop>", { desc = "Disable Ex mode" })
+
+    -- ============================================
+    -- QUICKFIX & LOCATION LISTS
+    -- ============================================
     map("n", "<leader>co", ":copen<CR>", { desc = "Open quickfix list" })
     map("n", "<leader>cc", ":cclose<CR>", { desc = "Close quickfix list" })
     map("n", "<leader>cn", ":cnext<CR>zz", { desc = "Next quickfix item" })
@@ -78,20 +106,17 @@ M.setup = function()
     map("n", "<leader>lc", ":lclose<CR>", { desc = "Close location list" })
     map("n", "<leader>ln", ":lnext<CR>zz", { desc = "Next location list item" })
     map("n", "<leader>lp", ":lprev<CR>zz", { desc = "Previous location list item" })
+    map("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location list item" })
+    map("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Previous location list item" })
 
-    -- Replace word under cursor
-    map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+    -- ============================================
+    -- TOGGLE OPTIONS
+    -- ============================================
+    map("n", "<leader>tw", ":set wrap!<CR>", { desc = "Toggle line wrap" })
 
-    -- Make file executable
-    map("n", "<leader>x", "<cmd>!chmod +x %<CR>", { desc = "Make file executable" })
-
-    -- Reload config
-    map("n", "<leader><leader>", function() vim.cmd("so") end, { desc = "Reload config" })
-
-    -- Disable Ex mode
-    map("n", "Q", "<nop>", { desc = "Disable Ex mode" })
-
-    -- Telescope keymaps
+    -- ============================================
+    -- TELESCOPE (if loaded)
+    -- ============================================
     local telescope_ok, builtin = pcall(require, "telescope.builtin")
     if telescope_ok then
         map("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
@@ -103,51 +128,113 @@ M.setup = function()
         map("n", "<leader>fc", builtin.commands, { desc = "Find commands" })
     end
 
-    -- Terminal mappings
-    -- Use <C-\><C-n> or jk to exit terminal mode instead of Esc to avoid conflicts
+    -- ============================================
+    -- TERMINAL
+    -- ============================================
     map("t", "jk", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
     map("t", "<C-\\><C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode (alternate)" })
+
+    -- Terminal window navigation
     map("t", "<C-h>", [[<C-\><C-n><C-w>h]], { desc = "Move to left window from terminal" })
     map("t", "<C-j>", [[<C-\><C-n><C-w>j]], { desc = "Move to window below from terminal" })
     map("t", "<C-k>", [[<C-\><C-n><C-w>k]], { desc = "Move to window above from terminal" })
     map("t", "<C-l>", [[<C-\><C-n><C-w>l]], { desc = "Move to right window from terminal" })
 
-    -- Go specific (if in Go file)
+    -- ============================================
+    -- COMMENTS (handled by Comment.nvim)
+    -- ============================================
+    map("n", "<leader>/", function()
+        require('Comment.api').toggle.linewise.current()
+    end, { desc = "Toggle comment" })
+    map("v", "<leader>/", function()
+        require('Comment.api').toggle.linewise(vim.fn.visualmode())
+    end, { desc = "Toggle comment for selection" })
+
+    -- ============================================
+    -- LANGUAGE SPECIFIC
+    -- ============================================
     vim.api.nvim_create_autocmd("FileType", {
         pattern = "go",
         callback = function()
             map("n", "<leader>ee", "oif err != nil {<CR>}<Esc>Oreturn err<Esc>", { buffer = true, desc = "Go: Insert error handling" })
         end,
     })
+
+    -- ============================================
+    -- GIT / LAZYGIT
+    -- ============================================
+    map("n", "<leader>lg", "<cmd>LazyGit<CR>", { desc = "LazyGit" })
+
+    -- ============================================
+    -- LSP KEYMAPS (attached to LSP clients)
+    -- ============================================
+    -- These are defined in the on_attach function for LSP
 end
 
--- LSP Keymaps (to be called on LspAttach)
-M.lsp_keymaps = function(bufnr)
-    local opts = { buffer = bufnr }
-    
-    map("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
+-- LSP-specific keymaps (to be called in on_attach)
+function M.lsp_keymaps(bufnr)
+    local opts = { noremap = true, silent = true, buffer = bufnr }
+    local map = vim.keymap.set
+
+    -- Go to commands
     map("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to definition" }))
-    map("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover documentation" }))
+    map("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
     map("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
+    map("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "Go to references" }))
+    map("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover" }))
     map("n", "<C-k>", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
+
+    -- Workspace commands
     map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, vim.tbl_extend("force", opts, { desc = "Add workspace folder" }))
     map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, vim.tbl_extend("force", opts, { desc = "Remove workspace folder" }))
     map("n", "<leader>wl", function()
         print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, vim.tbl_extend("force", opts, { desc = "List workspace folders" }))
+
+    -- Code actions and refactoring
     map("n", "<leader>D", vim.lsp.buf.type_definition, vim.tbl_extend("force", opts, { desc = "Type definition" }))
     map("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename" }))
     map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
-    map("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "References" }))
+
+    -- Formatting
     map("n", "<leader>f", function()
-        vim.lsp.buf.format { async = true }
+        vim.lsp.buf.format({ async = true })
     end, vim.tbl_extend("force", opts, { desc = "Format buffer" }))
-    
-    -- Diagnostic keymaps
+
+    -- Diagnostics - using 'd' prefix for diagnostics
+    map("n", "<leader>de", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Show diagnostic" }))
+    map("n", "<leader>dl", vim.diagnostic.setloclist, vim.tbl_extend("force", opts, { desc = "Diagnostics to location list" }))
     map("n", "[d", vim.diagnostic.goto_prev, vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
     map("n", "]d", vim.diagnostic.goto_next, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
-    map("n", "<leader>e", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Show diagnostic" }))
-    map("n", "<leader>dl", vim.diagnostic.setloclist, vim.tbl_extend("force", opts, { desc = "Diagnostics to location list" }))
+
+    -- Additional LSP functionality (from primeagen.lua)
+    map("n", "<leader>vws", vim.lsp.buf.workspace_symbol, vim.tbl_extend("force", opts, { desc = "Workspace symbol" }))
+    map("n", "<leader>vd", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Open diagnostic float" }))
+    map("n", "<leader>vca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
+    map("n", "<leader>vrr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "References" }))
+    map("n", "<leader>vrn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename" }))
+end
+
+-- DAP (Debug Adapter Protocol) keymaps - using 'db' prefix to avoid conflicts
+function M.dap_keymaps()
+    local map = vim.keymap.set
+
+    map("n", "<leader>dbb", function() require('dap').toggle_breakpoint() end, { desc = "Toggle breakpoint" })
+    map("n", "<leader>dbc", function() require('dap').continue() end, { desc = "Start/continue debugging" })
+    map("n", "<leader>dbo", function() require('dap').step_over() end, { desc = "Step over" })
+    map("n", "<leader>dbi", function() require('dap').step_into() end, { desc = "Step into" })
+    map("n", "<leader>dbr", function() require('dap').repl.open() end, { desc = "Open REPL" })
+    map("n", "<leader>dbx", function() require('dap').terminate() end, { desc = "Terminate debug session" })
+    map("n", "<leader>dbu", function() require('dapui').toggle() end, { desc = "Toggle DAP UI" })
+end
+
+-- Diffview keymaps - no conflicts with 'do' and 'dc' anymore
+function M.diffview_keymaps()
+    local map = vim.keymap.set
+
+    map("n", "<leader>do", ":DiffviewOpen<CR>", { desc = "Diffview Open" })
+    map("n", "<leader>dc", ":DiffviewClose<CR>", { desc = "Diffview Close" })
+    map("n", "<leader>df", ":DiffviewToggleFiles<CR>", { desc = "Toggle Diff Files" })
 end
 
 return M

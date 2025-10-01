@@ -5,6 +5,8 @@ return {
 		cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
 		config = function()
 			require("diffview").setup()
+			-- Setup Diffview keymaps
+			require("tarun.keymaps").diffview_keymaps()
 		end,
 	},
 }

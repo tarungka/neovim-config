@@ -108,5 +108,8 @@ return {
     }
 
     dap.configurations.typescript = dap.configurations.javascript
+
+    -- Setup DAP keymaps
+    require("tarun.keymaps").dap_keymaps()
   end,
 }
