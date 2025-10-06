@@ -131,9 +131,6 @@ return {
 
 				-- Keymaps for Aerial window
 				keymaps = {
-					["K"] = function()
-						vim.lsp.buf.hover()
-					end,
 					["<CR>"] = "actions.jump",
 					["<2-LeftMouse>"] = "actions.jump",
 					["o"] = "actions.jump",
