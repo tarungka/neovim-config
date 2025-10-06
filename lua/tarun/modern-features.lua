@@ -75,42 +75,44 @@ return {
     },
 
     -- REST client for API testing
-    {
-        "rest-nvim/rest.nvim",
-        dependencies = { "nvim-lua/plenary.nvim" },
-        ft = "http",
-        config = function()
-            require("rest-nvim").setup({
-                result_split_horizontal = false,
-                result_split_in_place = false,
-                skip_ssl_verification = false,
-                encode_url = true,
-                highlight = {
-                    enabled = true,
-                    timeout = 150,
-                },
-                result = {
-                    show_url = true,
-                    show_http_info = true,
-                    show_headers = true,
-                    formatters = {
-                        json = "jq",
-                        html = function(body)
-                            return vim.fn.system({ "tidy", "-i", "-q", "-" }, body)
-                        end,
-                    },
-                },
-                jump_to_request = false,
-                env_file = ".env",
-                custom_dynamic_variables = {},
-                yank_dry_run = true,
-            })
-
-            vim.keymap.set("n", "<leader>rr", "<Plug>RestNvim", { desc = "Run REST request" })
-            vim.keymap.set("n", "<leader>rp", "<Plug>RestNvimPreview", { desc = "Preview REST request" })
-            vim.keymap.set("n", "<leader>rl", "<Plug>RestNvimLast", { desc = "Run last REST request" })
-        end,
-    },
+    -- DISABLED: Complex luarocks dependencies causing installation issues
+    -- Use curl, httpie, or Postman for REST API testing instead
+    -- {
+    --     "rest-nvim/rest.nvim",
+    --     dependencies = { "nvim-lua/plenary.nvim" },
+    --     ft = "http",
+    --     config = function()
+    --         require("rest-nvim").setup({
+    --             result_split_horizontal = false,
+    --             result_split_in_place = false,
+    --             skip_ssl_verification = false,
+    --             encode_url = true,
+    --             highlight = {
+    --                 enabled = true,
+    --                 timeout = 150,
+    --             },
+    --             result = {
+    --                 show_url = true,
+    --                 show_http_info = true,
+    --                 show_headers = true,
+    --                 formatters = {
+    --                     json = "jq",
+    --                     html = function(body)
+    --                         return vim.fn.system({ "tidy", "-i", "-q", "-" }, body)
+    --                     end,
+    --                 },
+    --             },
+    --             jump_to_request = false,
+    --             env_file = ".env",
+    --             custom_dynamic_variables = {},
+    --             yank_dry_run = true,
+    --         })
+    --
+    --         vim.keymap.set("n", "<leader>rr", "<Plug>RestNvim", { desc = "Run REST request" })
+    --         vim.keymap.set("n", "<leader>rp", "<Plug>RestNvimPreview", { desc = "Preview REST request" })
+    --         vim.keymap.set("n", "<leader>rl", "<Plug>RestNvimLast", { desc = "Run last REST request" })
+    --     end,
+    -- },
 
     -- Better marks
     {
