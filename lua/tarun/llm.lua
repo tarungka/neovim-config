@@ -1,6 +1,21 @@
 return {
 	"robitx/gp.nvim",
-	lazy = false,
+	cmd = {
+		"GpChatToggle",
+		"GpChatNew",
+		"GpExplain",
+		"GpRewrite",
+		"GpAppend",
+		"GpPrepend",
+	},
+	keys = {
+		{ "<leader>gC", "<cmd>GpChatToggle<CR>", desc = "Toggle GP Chat" },
+		{ "<leader>gg", "<cmd>GpChatNew<CR>", desc = "New GP Chat" },
+		{ "<leader>ge", ":<C-u>GpExplain<CR>", mode = "v", desc = "Explain selection" },
+		{ "<leader>gr", ":<C-u>GpRewrite<CR>", mode = "v", desc = "Rewrite selection" },
+		{ "<leader>ga", ":<C-u>GpAppend<CR>", mode = "v", desc = "Append via GP" },
+		{ "<leader>gp", ":<C-u>GpPrepend<CR>", mode = "v", desc = "Prepend via GP" },
+	},
 	config = function()
 		local conf = {
 			-- Please start with minimal config possible.
@@ -32,24 +47,5 @@ return {
 		}
 		require("gp").setup(conf)
 
-		-- Shortcuts
-		-- local map = vim.keymap.set
-		-- local opts = { noremap = true, silent = true }
-		local opts = { }
-		local function map(mode, lhs, rhs, lopts)
-			local options = { noremap = true, silent = true }
-			if lopts then
-				options = vim.tbl_extend("force", options, lopts)
-			end
-			vim.keymap.set(mode, lhs, rhs, options)
-		end
-
-		map("v", "<leader>ge", ":<C-u>GpExplain<CR>", opts) -- Explain selection
-		map("v", "<leader>gr", ":<C-u>GpRewrite<CR>", opts) -- Rewrite selection
-		map("v", "<leader>ga", ":<C-u>GpAppend<CR>", opts) -- Append to selection
-		map("v", "<leader>gp", ":<C-u>GpPrepend<CR>", opts) -- Prepend to selection
-
-		map("n", "<leader>gc", ":GpChatToggle<CR>", opts) -- Toggle Chat window
-		map("n", "<leader>gg", ":GpChatNew<CR>", opts) -- New Chat
 	end,
 }

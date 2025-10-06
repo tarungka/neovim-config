@@ -2,7 +2,6 @@ return {
     {
         "numToStr/Comment.nvim",
         event = "VeryLazy", -- Load when needed
-        keys = { "gc", "gb" }, -- Load only when using comment shortcuts
         config = function()
             require("Comment").setup({
                 padding = true, -- Adds space after comment delimiters

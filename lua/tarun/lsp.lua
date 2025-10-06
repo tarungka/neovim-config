@@ -1,294 +1,150 @@
--- Mason setup (package manager for LSP servers)
-local status_mason, mason = pcall(require, "mason")
-if status_mason then
-    mason.setup({
-        ui = {
-            icons = {
-                package_installed = "[+]",
-                package_pending = "[~]",
-                package_uninstalled = "[-]",
-            },
-        },
-    })
-else
-    vim.notify("Mason not found, skipping setup", vim.log.levels.WARN)
-end
-
--- Mason-lspconfig setup
-local status_mason_lspconfig, mason_lspconfig = pcall(require, "mason-lspconfig")
-if status_mason_lspconfig then
-    mason_lspconfig.setup({
-        ensure_installed = { 
-            "pyright", 
-            "gopls", 
-            "ts_ls", 
-            "lua_ls",
-            "rust_analyzer",
-            "clangd",
-            "cssls",
-            "tailwindcss",
-            "bashls",
-            "jsonls",
-            "yamlls",
-            "html",
-            "dockerls",
-        },
-        automatic_installation = true,
-    })
-else
-    vim.notify("Mason-lspconfig not found, skipping setup", vim.log.levels.WARN)
-end
-
--- Mason-nvim-dap setup
-local status_mason_dap, mason_dap = pcall(require, "mason-nvim-dap")
-if status_mason_dap then
-    mason_dap.setup({
-        ensure_installed = {
-            "python",           -- Python debug adapter
-            "delve",            -- Go debug adapter
-            "js-debug-adapter", -- JavaScript/TypeScript debug adapter
-        },
-        automatic_installation = true,
-    })
-else
-    vim.notify("Mason-nvim-dap not found, skipping setup", vim.log.levels.WARN)
-end
+-- NOTE: Mason setup is now in lua/tarun/lazy.lua to ensure proper load order
+-- This file only contains LSP server configurations
 
 -- LSP server configurations
-local status_lspconfig, lspconfig = pcall(require, "lspconfig")
-if status_lspconfig then
-    -- Add capabilities for better completion support
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-    capabilities.textDocument.completion.completionItem.snippetSupport = true
+local cmp_ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+if cmp_ok then
+    capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
+end
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-    -- Common LSP setup function
-    local function setup_lsp(server, config)
-        config = config or {}
-        config.capabilities = capabilities
-        config.on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
+-- New Neovim 0.11+ pattern: use LspAttach autocmd instead of on_attach in config
+vim.api.nvim_create_autocmd('LspAttach', {
+    callback = function(args)
+        local bufnr = args.buf
+        -- Set omnifunc for LSP completion
+        if vim.api.nvim_buf_is_valid(bufnr) then
+            vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
         end
-        lspconfig[server].setup(config)
-    end
+        -- Set up LSP keymaps
+        require('tarun.keymaps').lsp_keymaps(bufnr)
+    end,
+})
 
-    -- Setup servers with enhanced configurations
-    setup_lsp("gopls", {
-        settings = {
-            gopls = {
-                analyses = {
-                    unusedparams = true,
-                    shadow = true,
-                },
-                staticcheck = true,
-                gofumpt = true,
+-- Configure and enable LSP servers
+-- nvim-lspconfig provides base configs (cmd, filetypes, root_dir) in lsp/*.lua
+-- We only need to add capabilities and custom settings, then enable
+
+-- gopls - Go language server
+vim.lsp.config('gopls', {
+    capabilities = capabilities,
+    settings = {
+        gopls = {
+            analyses = {
+                unusedparams = true,
+                shadow = true,
+            },
+            staticcheck = true,
+            gofumpt = true,
+        },
+    },
+})
+vim.lsp.enable('gopls')
+
+-- ts_ls - TypeScript/JavaScript language server
+vim.lsp.config('ts_ls', {
+    capabilities = capabilities,
+    settings = {
+        typescript = {
+            inlayHints = {
+                includeInlayParameterNameHints = 'all',
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
             },
         },
-    })
-
-    -- TypeScript LSP setup
-    lspconfig.ts_ls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-        settings = {
-            typescript = {
-                inlayHints = {
-                    includeInlayParameterNameHints = "all",
-                    includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                    includeInlayFunctionParameterTypeHints = true,
-                    includeInlayVariableTypeHints = true,
-                    includeInlayPropertyDeclarationTypeHints = true,
-                    includeInlayFunctionLikeReturnTypeHints = true,
-                    includeInlayEnumMemberValueHints = true,
-                },
-            },
-            javascript = {
-                inlayHints = {
-                    includeInlayParameterNameHints = "all",
-                    includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                    includeInlayFunctionParameterTypeHints = true,
-                    includeInlayVariableTypeHints = true,
-                    includeInlayPropertyDeclarationTypeHints = true,
-                    includeInlayFunctionLikeReturnTypeHints = true,
-                    includeInlayEnumMemberValueHints = true,
-                },
+        javascript = {
+            inlayHints = {
+                includeInlayParameterNameHints = 'all',
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
             },
         },
-    })
+    },
+})
+vim.lsp.enable('ts_ls')
 
-    -- Python LSP setup
-    lspconfig.pyright.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-        settings = {
-            python = {
-                analysis = {
-                    typeCheckingMode = "basic",
-                    autoSearchPaths = true,
-                    useLibraryCodeForTypes = true,
-                },
+-- pyright - Python language server
+vim.lsp.config('pyright', {
+    capabilities = capabilities,
+    settings = {
+        python = {
+            analysis = {
+                typeCheckingMode = 'basic',
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
             },
         },
-    })
+    },
+})
+vim.lsp.enable('pyright')
 
-    -- Lua LSP setup
-    lspconfig.lua_ls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-        settings = {
-            Lua = {
-                diagnostics = {
-                    globals = { "vim" },
-                },
-                workspace = {
-                    library = vim.api.nvim_get_runtime_file("", true),
-                    checkThirdParty = false,
-                },
-                telemetry = {
-                    enable = false,
-                },
+-- lua_ls - Lua language server
+vim.lsp.config('lua_ls', {
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            diagnostics = {
+                globals = { 'vim' },
+            },
+            workspace = {
+                library = vim.api.nvim_get_runtime_file('', true),
+                checkThirdParty = false,
+            },
+            telemetry = {
+                enable = false,
             },
         },
-    })
-    -- Rust LSP setup
-    lspconfig.rust_analyzer.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-        settings = {
-            ["rust-analyzer"] = {
-                checkOnSave = {
-                    command = "clippy",
-                },
-                cargo = {
-                    loadOutDirsFromCheck = true,
-                },
-                procMacro = {
-                    enable = true,
-                },
+    },
+})
+vim.lsp.enable('lua_ls')
+
+-- rust_analyzer - Rust language server
+vim.lsp.config('rust_analyzer', {
+    capabilities = capabilities,
+    settings = {
+        ['rust-analyzer'] = {
+            checkOnSave = {
+                command = 'clippy',
+            },
+            cargo = {
+                loadOutDirsFromCheck = true,
+            },
+            procMacro = {
+                enable = true,
             },
         },
-    })
+    },
+})
+vim.lsp.enable('rust_analyzer')
 
-    -- Clangd setup for C/C++
-    lspconfig.clangd.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-        cmd = {
-            "clangd",
-            "--background-index",
-            "--clang-tidy",
-            "--header-insertion=iwyu",
-            "--completion-style=detailed",
-            "--function-arg-placeholders",
-        },
-    })
+-- clangd - C/C++ language server (with custom command args)
+vim.lsp.config('clangd', {
+    capabilities = capabilities,
+    cmd = {
+        'clangd',
+        '--background-index',
+        '--clang-tidy',
+        '--header-insertion=iwyu',
+        '--completion-style=detailed',
+        '--function-arg-placeholders=false',
+    },
+})
+vim.lsp.enable('clangd')
 
-    -- CSS/SCSS LSP
-    lspconfig.cssls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-    })
-
-    -- HTML LSP
-    lspconfig.html.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-    })
-
-    -- JSON LSP
-    lspconfig.jsonls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-    })
-
-    -- YAML LSP
-    lspconfig.yamlls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-    })
-
-    -- Bash LSP
-    lspconfig.bashls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-    })
-
-    -- Docker LSP
-    lspconfig.dockerls.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-    })
-
-    -- Tailwind CSS
-    lspconfig.tailwindcss.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-            -- Enable completion triggered by <c-x><c-o>
-            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-            -- Setup LSP keymaps
-            require("tarun.keymaps").lsp_keymaps(bufnr)
-        end,
-    })
-else
-    vim.notify("LSP config not found, skipping setup", vim.log.levels.WARN)
+-- Simple servers (no custom settings needed, just add capabilities)
+local simple_servers = { 'cssls', 'html', 'jsonls', 'yamlls', 'bashls', 'dockerls', 'tailwindcss' }
+for _, server in ipairs(simple_servers) do
+    vim.lsp.config(server, { capabilities = capabilities })
+    vim.lsp.enable(server)
 end
 
 -- Float diagnostic on cursor hold

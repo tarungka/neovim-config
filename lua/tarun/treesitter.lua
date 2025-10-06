@@ -4,7 +4,7 @@ return {
         build = ":TSUpdate",
         dependencies = {
             "nvim-treesitter/nvim-treesitter-context",
-            "HiPhish/nvim-ts-rainbow2",
+            -- "HiPhish/nvim-ts-rainbow2", -- DISABLED: Has query errors in Neovim 0.12
         },
         lazy = false, -- Treesitter benefits from being loaded early
         config = function()
@@ -30,9 +30,18 @@ return {
                 auto_install = true,
                 highlight = {
                     enable = true,
-                    additional_vim_regex_highlighting = { "markdown" }, -- Keep or remove based on your needs
+                    -- Enable fallback regex highlighting for Go (since vim-go was removed)
+                    -- and markdown for better formatting
+                    additional_vim_regex_highlighting = { "go", "markdown" },
                 },
                 indent = { enable = true },
+                -- DISABLED: nvim-ts-rainbow2 has query errors in Neovim 0.12
+                -- Replace with rainbow-delimiters.nvim if needed
+                -- rainbow = {
+                --     enable = true,
+                --     query = "rainbow-parens",
+                --     strategy = require("ts-rainbow").strategy.global,
+                -- },
                 incremental_selection = {
                     enable = true,
                     keymaps = {

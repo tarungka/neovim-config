@@ -48,8 +48,7 @@ function M.setup()
     map("n", "]b", ":bnext<CR>", { desc = "Next buffer" })
     map("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
     map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
-    map("n", "<Tab>", ":BufferLineCycleNext<CR>", { desc = "Next buffer (BufferLine)" })
-    map("n", "<S-Tab>", ":BufferLineCyclePrev<CR>", { desc = "Previous buffer (BufferLine)" })
+    -- Removed Tab/Shift-Tab: conflicts with nvim-cmp autocomplete navigation
 
     -- ============================================
     -- NAVIGATION
@@ -63,8 +62,8 @@ function M.setup()
     -- ============================================
     -- SEARCH & REPLACE
     -- ============================================
-    map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
-    map("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+    map("n", "<leader>sw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+    map("n", "<leader>h", ":nohl<CR>", { desc = "Clear search highlights" })
 
     -- ============================================
     -- EDITING
@@ -102,12 +101,15 @@ function M.setup()
     map("n", "<leader>cc", ":cclose<CR>", { desc = "Close quickfix list" })
     map("n", "<leader>cn", ":cnext<CR>zz", { desc = "Next quickfix item" })
     map("n", "<leader>cp", ":cprev<CR>zz", { desc = "Previous quickfix item" })
+    -- Modern bracket-style navigation
+    map("n", "[q", ":cprev<CR>zz", { desc = "Previous quickfix item" })
+    map("n", "]q", ":cnext<CR>zz", { desc = "Next quickfix item" })
+
     map("n", "<leader>lo", ":lopen<CR>", { desc = "Open location list" })
     map("n", "<leader>lc", ":lclose<CR>", { desc = "Close location list" })
     map("n", "<leader>ln", ":lnext<CR>zz", { desc = "Next location list item" })
     map("n", "<leader>lp", ":lprev<CR>zz", { desc = "Previous location list item" })
-    map("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location list item" })
-    map("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Previous location list item" })
+    -- Removed <leader>j/k: duplicates of ln/lp above
 
     -- ============================================
     -- TOGGLE OPTIONS
@@ -182,7 +184,9 @@ function M.lsp_keymaps(bufnr)
     map("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
     map("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "Go to references" }))
     map("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover" }))
-    map("n", "<C-k>", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
+    -- Keep window navigation on <C-k>; expose signature help via insert mode and leader binding
+    map("i", "<C-k>", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
+    map("n", "<leader>K", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
 
     -- Workspace commands
     map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, vim.tbl_extend("force", opts, { desc = "Add workspace folder" }))
@@ -207,12 +211,8 @@ function M.lsp_keymaps(bufnr)
     map("n", "[d", vim.diagnostic.goto_prev, vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
     map("n", "]d", vim.diagnostic.goto_next, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
 
-    -- Additional LSP functionality (from primeagen.lua)
+    -- Additional LSP functionality
     map("n", "<leader>vws", vim.lsp.buf.workspace_symbol, vim.tbl_extend("force", opts, { desc = "Workspace symbol" }))
-    map("n", "<leader>vd", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Open diagnostic float" }))
-    map("n", "<leader>vca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
-    map("n", "<leader>vrr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "References" }))
-    map("n", "<leader>vrn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename" }))
 end
 
 -- DAP (Debug Adapter Protocol) keymaps - using 'db' prefix to avoid conflicts

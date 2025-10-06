@@ -2,13 +2,82 @@ return {
 	-- Performance optimizations
 	require("tarun.performance"),
 
-	-- Plugin specification
+	-- Mason - LSP/DAP/Linter installer (must load before LSP)
+	{
+		"williamboman/mason.nvim",
+		lazy = false,
+		priority = 50,
+		config = function()
+			require("mason").setup({
+				ui = {
+					icons = {
+						package_installed = "[+]",
+						package_pending = "[~]",
+						package_uninstalled = "[-]",
+					},
+				},
+			})
+		end,
+	},
+
+	-- Mason LSP integration
+	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		lazy = false,
+		priority = 49,
+		config = function()
+			require("mason-lspconfig").setup({
+				ensure_installed = {
+					"gopls",
+					"ts_ls",
+					"pyright",
+					"lua_ls",
+					"rust_analyzer",
+					"clangd",
+					"cssls",
+					"tailwindcss",
+					"bashls",
+					"jsonls",
+					"yamlls",
+					"html",
+					"dockerls",
+				},
+				automatic_installation = true,
+			})
+		end,
+	},
+
+	-- Mason DAP integration
+	{
+		"jay-babu/mason-nvim-dap.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		lazy = false,
+		priority = 48,
+		config = function()
+			require("mason-nvim-dap").setup({
+				ensure_installed = {
+					"delve",            -- Go debugger
+					"python",           -- Python debugger
+					"js-debug-adapter", -- JavaScript/TypeScript debugger
+				},
+				automatic_installation = true,
+			})
+		end,
+	},
+
+	-- LSP Configuration
 	{
 		"neovim/nvim-lspconfig",
+		lazy = false,
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 		},
+		config = function()
+			-- Load LSP server configurations
+			require("tarun.lsp")
+		end,
 	},
 
 	-- LSP Enhancements
@@ -21,10 +90,7 @@ return {
 	require("tarun.treesitter"),
 
 	-- Language specific
-	{
-		"fatih/vim-go",
-		build = ":GoUpdateBinaries",
-	},
+	-- Removed vim-go: conflicts with gopls LSP (gopls provides all functionality)
 	{
 		"iamcco/markdown-preview.nvim",
 		build = "cd app && npm install",

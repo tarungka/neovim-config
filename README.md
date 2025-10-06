@@ -49,7 +49,6 @@ nvim
 | Plugin | Description |
 |--------|-------------|
 | [lazy.nvim](https://github.com/folke/lazy.nvim) | Modern plugin manager with lazy loading |
-| [impatient.nvim](https://github.com/lewis6991/impatient.nvim) | Speed up startup time |
 
 ### LSP & Language Support
 | Plugin | Description |
@@ -170,7 +169,7 @@ nvim
 |--------|-------------|
 | [copilot.vim](https://github.com/github/copilot.vim) | GitHub Copilot AI assistant |
 | [gp.nvim](https://github.com/Robitx/gp.nvim) | ChatGPT integration (optional) |
-| [auto-session](https://github.com/rmagatti/auto-session) | Session management |
+| [auto-session](https://github.com/rmagatti/auto-session) + [session-lens](https://github.com/rmagatti/session-lens) | Session management with Telescope picker |
 | [rest.nvim](https://github.com/rest-nvim/rest.nvim) | HTTP REST client |
 
 ### Terminal
@@ -189,6 +188,7 @@ nvim
 | `<C-J>` | Accept Copilot suggestion |
 | `<C-]>` | Next Copilot suggestion |
 | `<M-[>` | Previous Copilot suggestion |
+| `<C-\\>` | Open Copilot chat panel |
 | `<Tab>` | Next completion item / expand snippet |
 | `<S-Tab>` | Previous completion item |
 | `<CR>` | Confirm completion |
@@ -238,11 +238,14 @@ nvim
 | `N` | Previous search result (centered) |
 | `s` | Flash jump |
 | `S` | Flash Treesitter |
+| `r` (operator) | Flash remote jump |
+| `R` (operator/visual) | Flash Treesitter search |
+| `<C-s>` (command-line) | Toggle Flash search |
 
 ### Search & Replace
 | Shortcut | Description |
 |----------|-------------|
-| `<leader>s` | Replace word under cursor |
+| `<leader>sw` | Replace word under cursor |
 | `<leader>nh` | Clear search highlights |
 
 ### Editing
@@ -268,17 +271,17 @@ nvim
 | `gD` | Go to declaration |
 | `gi` | Go to implementation |
 | `gr` | Go to references |
-| `gR` | LSP references (Trouble) |
 | `K` | Hover documentation |
-| `<C-k>` | Signature help |
+| `<leader>K` | Signature help (normal mode) |
+| `<C-k>` (insert) | Signature help |
 | `<leader>D` | Type definition |
-| `<leader>rn` / `<leader>vrn` | Rename symbol |
-| `<leader>ca` / `<leader>vca` | Code action |
+| `<leader>rn` | Rename symbol |
+| `<leader>ca` | Code action |
 | `<leader>f` | Format buffer |
 | `[d` | Previous diagnostic |
 | `]d` | Next diagnostic |
-| `<leader>de` / `<leader>vd` | Show diagnostic |
-| `<leader>dl` | Diagnostics to location list |
+| `<leader>de` | Show diagnostic float |
+| `<leader>dl` | Send diagnostics to location list |
 | `<leader>vws` | Workspace symbol |
 | `<leader>wa` | Add workspace folder |
 | `<leader>wr` | Remove workspace folder |
@@ -307,14 +310,24 @@ nvim
 | `<leader>hu` | Undo stage hunk |
 | `<leader>hR` | Reset buffer |
 | `<leader>hp` | Preview hunk |
-| `<leader>hb` / `<leader>hl` | Blame line |
+| `<leader>hl` | Blame line |
 | `<leader>hd` | Diff this |
-| `<leader>ht` / `<leader>tb` | Toggle blame |
+| `<leader>ht` | Toggle line blame |
 | `ih` | Select hunk (text object) |
 
 ### Git (Other)
 | Shortcut | Description |
 |----------|-------------|
+| `<leader>gs` | Git status (Fugitive) |
+| `<leader>gc` | Git commit |
+| `<leader>gp` | Git push |
+| `<leader>gl` | Git pull |
+| `<leader>gf` | Git fetch |
+| `<leader>gb` | Git blame |
+| `<leader>gd` | Git diff (horizontal) |
+| `<leader>gD` | Git diff (vertical) |
+| `<leader>gr` | Git read (reset file) |
+| `<leader>gw` | Git write (stage file) |
 | `<leader>lg` | LazyGit |
 | `<leader>do` | Diffview open |
 | `<leader>dc` | Diffview close |
@@ -368,7 +381,7 @@ nvim
 ### Terminal
 | Shortcut | Description |
 |----------|-------------|
-| `<C-\>` | Toggle floating terminal |
+| `<leader>T` | Toggle floating terminal |
 | `jk` (terminal) | Exit terminal mode |
 | `<C-h/j/k/l>` (terminal) | Navigate to window from terminal |
 
@@ -381,6 +394,14 @@ nvim
 | `<C-e>` | Harpoon menu |
 | `<leader>ss` | Search sessions |
 | `<leader>rr` | Run REST request |
+| `<leader>rp` | Preview REST request |
+| `<leader>rl` | Run last REST request |
+| `<leader>gC` | Toggle GP chat |
+| `<leader>gg` | New GP chat |
+| `<leader>ge` (visual) | GP explain selection |
+| `<leader>gr` (visual) | GP rewrite selection |
+| `<leader>ga` (visual) | GP append to selection |
+| `<leader>gp` (visual) | GP prepend to selection |
 | `]t` | Next TODO comment |
 | `[t` | Previous TODO comment |
 

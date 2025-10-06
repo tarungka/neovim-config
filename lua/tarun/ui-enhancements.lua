@@ -13,6 +13,32 @@ return {
                     ["vim.lsp.util.stylize_markdown"] = true,
                     ["cmp.entry.get_documentation"] = true,
                 },
+                progress = {
+                    enabled = false, -- Using fidget.nvim instead
+                },
+                hover = {
+                    enabled = true,
+                    view = nil,
+                    opts = {},
+                },
+                signature = {
+                    enabled = false, -- Using lsp_signature.nvim instead
+                },
+                message = {
+                    enabled = true,
+                    view = "notify",
+                    opts = {},
+                },
+                documentation = {
+                    view = "hover",
+                    opts = {
+                        lang = "markdown",
+                        replace = true,
+                        render = "plain",
+                        format = { "{message}" },
+                        win_options = { concealcursor = "n", conceallevel = 3 },
+                    },
+                },
             },
             presets = {
                 bottom_search = true,
@@ -80,34 +106,6 @@ return {
             notify = {
                 enabled = true,
                 view = "notify",
-            },
-            lsp = {
-                progress = {
-                    enabled = false, -- Using fidget.nvim instead
-                },
-                hover = {
-                    enabled = true,
-                    view = nil,
-                    opts = {},
-                },
-                signature = {
-                    enabled = false, -- Using lsp_signature.nvim instead
-                },
-                message = {
-                    enabled = true,
-                    view = "notify",
-                    opts = {},
-                },
-                documentation = {
-                    view = "hover",
-                    opts = {
-                        lang = "markdown",
-                        replace = true,
-                        render = "plain",
-                        format = { "{message}" },
-                        win_options = { concealcursor = "n", conceallevel = 3 },
-                    },
-                },
             },
             markdown = {
                 hover = {

@@ -1,12 +1,5 @@
 return {
     {
-        "lewis6991/impatient.nvim",
-        priority = 1000,
-        config = function()
-            require("impatient")
-        end,
-    },
-    {
         "dstein64/vim-startuptime",
         cmd = "StartupTime",
         config = function()

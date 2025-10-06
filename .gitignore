@@ -1,2 +1,6 @@
 plugged/
 backup/
+.cache/
+.local-share/
+.local-state/
+.nvimlog

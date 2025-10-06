@@ -4,11 +4,11 @@ return {
     event = "VeryLazy",
 	config = function()
 		require("toggleterm").setup({
-			size = 20, -- Default terminal height
-			-- open_mapping = [[<C-\>]], -- Open with Ctrl + \
+		size = 20, -- Default terminal height
+		-- open_mapping = [[<C-\>]], -- Example: Open with Ctrl + \
 
             -- open_mapping = "<C-a>",
-            open_mapping = "<C-\\>",
+            open_mapping = [[<leader>T]], -- Toggle terminal with <leader>T
 			hide_numbers = true, -- Hide line numbers
 			shade_terminals = true,
 			start_in_insert = true,

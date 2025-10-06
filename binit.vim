@@ -21,10 +21,9 @@ Plug 'rafamadriz/friendly-snippets'
 " Syntax Highlighting & Treesitter
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-context'
-Plug 'HiPhish/nvim-ts-rainbow2'
+" Plug 'HiPhish/nvim-ts-rainbow2'  " DISABLED: Has query errors in Neovim 0.12
 
-" Golang Support
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+" Golang Support: Using gopls LSP instead of vim-go (removed to avoid conflicts)
 
 " File Explorer
 Plug 'nvim-tree/nvim-tree.lua'
@@ -196,11 +195,11 @@ cmp.setup({
 require("nvim-treesitter.configs").setup({
   ensure_installed = { "go", "javascript", "typescript", "lua", "python" },
   highlight = { enable = true },
-  rainbow = { 
-      enable = true, 
-      extended_mode = true,
-      strategy= require("ts-rainbow.strategy.global") 
-  },
+  -- rainbow = {
+  --     enable = true,
+  --     extended_mode = true,
+  --     strategy= require("ts-rainbow.strategy.global")
+  -- },  -- DISABLED: Has query errors in Neovim 0.12
   indent = { enable = true },
   folds = { enable = true },
   textobjects = { enable = true },
@@ -337,47 +336,5 @@ vim.cmd.colorscheme "catppuccin"
 
 -- Keybinding to toggle file tree
 -- vim.api.nvim_set_keymap("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-
--- === Formatter Setup ===
-require("conform").setup({
-    formatters_by_ft = {
-        go = { "gofumpt", "golines" },
-        typescript = { "prettier" },
-    },
-})
-
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = { "*.go", "*.ts" },
-    callback = function()
-        require("conform").format()
-    end,
-})
-
--- CMP
-local cmp = require("cmp")
-
-cmp.setup({
-  snippet = {
-    expand = function(args)
-      require("luasnip").lsp_expand(args.body)
-    end,
-  },
-  mapping = {
-    ["<Tab>"] = cmp.mapping.select_next_item(),
-    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }),
-    ["<C-Space>"] = cmp.mapping.complete(),
-  },
-  sources = cmp.config.sources({
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-    { name = "buffer" },
-    { name = "path" },
-  }),
-})
-
--- Key maps
-vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true })
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show LSP hover info" })
 
 EOF

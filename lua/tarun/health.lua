@@ -4,7 +4,11 @@ local M = {}
 -- Check if a command exists
 local function command_exists(cmd)
     local handle = io.popen("command -v " .. cmd .. " 2>/dev/null")
-    local result = handle:read("*a")
+    if not handle then
+        return false
+    end
+
+    local result = handle:read("*a") or ""
     handle:close()
     return result ~= ""
 end

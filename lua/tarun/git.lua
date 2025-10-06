@@ -1,9 +1,10 @@
 return {
     "lewis6991/gitsigns.nvim",
-    -- lazy = false,
     event = "BufReadPre",
     config = function()
-        require("gitsigns").setup({
+        local gitsigns = require("gitsigns")
+
+        gitsigns.setup({
             signs = {
                 add = { text = "│" },
                 change = { text = "│" },
@@ -25,20 +26,11 @@ return {
                 virt_text_format = " <author> • <summary> ",
             },
             on_attach = function(bufnr)
-                -- print("gitsigns.nvim on_attach called for buffer " .. bufnr)
-                -- print("gitsigns.nvim on_attach called for buffer ", bufnr)
-                -- local gs = vim.b[bufnr].gitsigns
                 if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-                    print("Invalid buffer number:", bufnr)
                     return
                 end
 
-                local gs = require("gitsigns")
-                if not gs then
-                    print("Gitsigns module not found!")
-                    return
-                end
-                print("Gitsigns loaded, setting keymaps...")
+                local gs = package.loaded.gitsigns or gitsigns
 
                 local function map(mode, lhs, rhs, opts)
                     local options = { noremap = true, silent = true }
@@ -54,8 +46,7 @@ return {
                         return "]c"
                     end
                     vim.schedule(function()
-                        -- gs.next_hunk()
-                        require("gitsigns").next_hunk()
+                        gs.next_hunk()
                     end)
                     return "<Ignore>"
                 end, { expr = true, desc = "Next Hunk" })
@@ -65,8 +56,7 @@ return {
                         return "[c"
                     end
                     vim.schedule(function()
-                        -- gs.prev_hunk()
-                        require("gitsigns").prev_hunk()
+                        gs.prev_hunk()
                     end)
                     return "<Ignore>"
                 end, { expr = true, desc = "Prev Hunk" })

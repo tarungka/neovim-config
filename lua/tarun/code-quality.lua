@@ -36,7 +36,6 @@ return {
                         extra_args = { "--fast" },
                     }),
                     formatting.stylua,
-                    formatting.gofmt,
                     formatting.goimports,
                     formatting.rustfmt,
                     formatting.shfmt,
