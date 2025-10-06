@@ -124,12 +124,32 @@ return {
 		"stevearc/aerial.nvim",
 		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
 		lazy = false,
-		opts = {
-			layout = { default_direction = "right", min_width = 28 },
-			show_guides = true,
-		},
-		config = function(_, opts)
-			require("aerial").setup(opts)
+		config = function()
+			local aerial = require("aerial")
+
+			aerial.setup({
+				layout = { default_direction = "right", min_width = 28 },
+				show_guides = true,
+
+				-- Enhanced on_attach with hover support
+				on_attach = function(bufnr)
+					-- Smart K keybinding: works in both Aerial and source buffers
+					vim.keymap.set("n", "K", function()
+						if aerial.is_aerial_buffer() then
+							-- In Aerial window: jump to symbol and show hover
+							aerial.tree_cmd("edit")  -- Jump to symbol location
+							vim.defer_fn(function()
+								vim.lsp.buf.hover()  -- Show LSP hover in source context
+							end, 50)
+						else
+							-- In source buffer: normal hover
+							vim.lsp.buf.hover()
+						end
+					end, { buffer = bufnr, desc = "Hover (Aerial-aware)" })
+				end,
+			})
+
+			-- Toggle Aerial outline
 			vim.keymap.set("n", "<leader>to", "<cmd>AerialToggle! right<CR>", { noremap = true, silent = true, desc = "Toggle Outline" })
 		end,
 	},
