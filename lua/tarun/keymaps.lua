@@ -51,6 +51,42 @@ function M.setup()
     -- Removed Tab/Shift-Tab: conflicts with nvim-cmp autocomplete navigation
 
     -- ============================================
+    -- HARPOON (FILE MARKS)
+    -- ============================================
+    map("n", "<leader>ha", function()
+        require("harpoon"):list():add()
+    end, { desc = "Harpoon: Add file" })
+
+    map("n", "<leader>ho", function()
+        local harpoon = require("harpoon")
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+    end, { desc = "Harpoon: Open menu" })
+
+    map("n", "<leader>h1", function()
+        require("harpoon"):list():select(1)
+    end, { desc = "Harpoon: Jump to file 1" })
+
+    map("n", "<leader>h2", function()
+        require("harpoon"):list():select(2)
+    end, { desc = "Harpoon: Jump to file 2" })
+
+    map("n", "<leader>h3", function()
+        require("harpoon"):list():select(3)
+    end, { desc = "Harpoon: Jump to file 3" })
+
+    map("n", "<leader>h4", function()
+        require("harpoon"):list():select(4)
+    end, { desc = "Harpoon: Jump to file 4" })
+
+    map("n", "<leader>hn", function()
+        require("harpoon"):list():next()
+    end, { desc = "Harpoon: Next file" })
+
+    map("n", "<leader>hp", function()
+        require("harpoon"):list():prev()
+    end, { desc = "Harpoon: Previous file" })
+
+    -- ============================================
     -- NAVIGATION
     -- ============================================
     map("n", "<C-d>", "<C-d>zz", { desc = "Page down centered" })
@@ -63,7 +99,7 @@ function M.setup()
     -- SEARCH & REPLACE
     -- ============================================
     map("n", "<leader>sw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
-    map("n", "<leader>h", ":nohl<CR>", { desc = "Clear search highlights" })
+    -- Removed <leader>h (conflicts with git hunks and harpoon) - use <leader>nh instead
 
     -- ============================================
     -- EDITING

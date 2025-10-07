@@ -28,7 +28,7 @@ local function set_options()
   vim.opt.softtabstop = 4
   vim.opt.autoindent = true
   vim.opt.smartindent = true
-  vim.opt.timeoutlen = 500
+  vim.opt.timeoutlen = 1000
 
   -- **CLIPBOARD FIX**
   vim.opt.clipboard = "unnamedplus" -- Use system clipboard

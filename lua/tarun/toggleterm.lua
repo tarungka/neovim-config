@@ -8,7 +8,7 @@ return {
 		-- open_mapping = [[<C-\>]], -- Example: Open with Ctrl + \
 
             -- open_mapping = "<C-a>",
-            open_mapping = [[<leader>T]], -- Toggle terminal with <leader>T
+            -- open_mapping = [[<leader>T]], -- Toggle terminal with <leader>T
 			hide_numbers = true, -- Hide line numbers
 			shade_terminals = true,
 			start_in_insert = true,
